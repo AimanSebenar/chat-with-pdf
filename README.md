@@ -1,5 +1,5 @@
 # Chat With PDF using Ollama and LangChain
-This is a simple LLM project I made which allows users to upload their PDF file and interact/query its contents using a local LLM through Ollama. The model uses Retrieval Augemented Generation (RAG) to provide relevant answers based on the PDF file's content.
+This is a simple LLM project I made which allows users to upload their PDF file and interact/query its contents using a local LLM through Ollama. The model uses Retrieval Augmented Generation (RAG) to provide relevant answers based on the PDF file's content.
 
 ## Key Features
 - Upload a PDF document file.
@@ -15,7 +15,7 @@ This is a simple LLM project I made which allows users to upload their PDF file 
 - LangChain - For chain logic and RAG setup.
 - PyPDF - Allows PDF file text extraction.
 - FAISS - A vector database for similarity search
-- HuggingFace Embedddings - To convert text to vector representations
+- HuggingFace Embeddings - To convert text to vector representations
 - Streamlit - Enables a simple web UI
 
 ## Running the Project
@@ -24,19 +24,19 @@ This is a simple LLM project I made which allows users to upload their PDF file 
 
 ### 1. Set up Virtual Environment
 
-'''bash
+'''
 python -m venv .venv
 .venv\Scripts\activate # for Windows, source venv/bin/activate for macOS
 '''
 
 ### 2. Install Requirements
 
-'''bash
+'''
 pip install -r requirements.txt
 '''
 
 ### 3. Run the App
 
-'''bash
+'''
 streamlit run app.py
 '''
