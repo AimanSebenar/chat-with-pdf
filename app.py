@@ -36,8 +36,6 @@ if uploaded_file:
     if query:
         docs = retriever.get_relevant_documents(query)
         st.write("Retrieved docs preview:",[d.page_content[:300] for d in docs])
-        answer = qa.run(query)
-        st.success(answer)
-        # with st.spinner("Thinking..."):
-        #     answer = qa.run(query)
-        #     st.success(answer)
+        with st.spinner("Thinking..."):
+            answer = qa.run(query)
+            st.success(answer)
