@@ -25,8 +25,8 @@ This is a simple LLM project I made which allows users to upload their PDF file 
 ### 1. Set up Virtual Environment
 
 '''bash
-python -m venv venv
-venv\Scripts\activate # for Windows, source venv/bin/activate for macOS
+python -m venv .venv
+.venv\Scripts\activate # for Windows, source venv/bin/activate for macOS
 '''
 
 ### 2. Install Requirements
