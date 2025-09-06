@@ -28,5 +28,5 @@ pip install -r requirements.txt
 ### 3. Run the App
 
 ```
-streamlit run fixthedocs.py
+streamlit run fixthedoc.py
 ```
