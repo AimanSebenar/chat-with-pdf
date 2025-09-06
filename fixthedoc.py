@@ -143,12 +143,13 @@ def doc_maintenance(old_text, new_text):
 
 st.title("Smart Documentation Assistant")
 
-tab1, tab2, tab3 = st.tabs(["Check", "Search", "Compare"])
+tab1, tab2 = st.tabs(["Check", "Compare"])
 
 with tab1:
     st.header("Doc Creation Assistant")
+    st.text("Improve your writing by checking with an assistant!")
     uploaded_file = st.file_uploader("Upload a document (.txt or .pdf)", type=["txt", "pdf"], key="create_upload")
-    input_text = st.text_area("Or enter your doc draft or code:", value="")
+    input_text = st.text_area("Or enter your doc draft:", value="")
     if uploaded_file:
         extracted_text = get_input_text(uploaded_file, "")
         if extracted_text:
@@ -167,33 +168,8 @@ with tab1:
             st.write("Please provide text via upload or input.")
 
 with tab2:
-    st.header("Intelligent Search in Docs")
-    uploaded_doc = st.file_uploader("Upload documentation (.txt or .pdf)", type=["txt", "pdf"], key="consume_upload")
-    doc_text = st.text_area("Or paste your documentation text:", value="")
-    if uploaded_doc:
-        extracted_doc = get_input_text(uploaded_doc, "")
-        if extracted_doc:
-            st.write("Extracted Document Preview (first 500 characters):")
-            st.text(extracted_doc[:500] + "..." if len(extracted_doc) > 500 else extracted_doc)
-    query = st.text_input("Search Query:", value="")
-    if st.button("Search"):
-        doc_to_process = get_input_text(uploaded_doc, doc_text)
-        if doc_to_process:
-            results = intelligent_search(doc_to_process, query)
-            if isinstance(results, str):
-                st.write(results)
-            else:
-                st.subheader("Semantic Matches (BERT-based):")
-                for sent, score in results["semantic"]:
-                    st.write(f"Score: {score:.2f} - {sent}")
-                st.subheader("Fuzzy Keyword Matches:")
-                for sent, score in results["fuzzy"]:
-                    st.write(f"Score: {score} - {sent}")
-        else:
-            st.write("Please provide documentation via upload or input.")
-
-with tab3:
     st.header("Doc Maintenance")
+    st.text("Maintain your documentation by comparing them properly!")
     uploaded_old = st.file_uploader("Upload old documentation (.txt or .pdf)", type=["txt", "pdf"], key="old_upload")
     old_text = st.text_area("Or enter old documentation:", value="")
     if uploaded_old:
@@ -201,8 +177,8 @@ with tab3:
         if extracted_old:
             st.write("Extracted Old Document Preview (first 500 characters):")
             st.text(extracted_old[:500] + "..." if len(extracted_old) > 500 else extracted_old)
-    uploaded_new = st.file_uploader("Upload new code or text (.txt or .pdf)", type=["txt", "pdf"], key="new_upload")
-    new_text = st.text_area("Or enter new code or updated text:", value="")
+    uploaded_new = st.file_uploader("Upload new documentation (.txt or .pdf)", type=["txt", "pdf"], key="new_upload")
+    new_text = st.text_area("Or enter new documentation:", value="")
     if uploaded_new:
         extracted_new = get_input_text(uploaded_new, "")
         if extracted_new:
