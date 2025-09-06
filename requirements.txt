@@ -1,6 +1,5 @@
 streamlit
 PyPDF2
-langchain
-faiss-cpu
 sentence-transformers
-langchain-community
+nltk
+fuzzwuzzy

@@ -3,7 +3,7 @@ import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-from transformers import BertModel, BertTokenizer
+from transformers import BartForConditionalGeneration, BartTokenizer, BertModel, BertTokenizer
 import torch
 import PyPDF2
 import re
@@ -13,7 +13,28 @@ from fuzzywuzzy import process
 # nltk.download('punkt', quiet=True)
 # nltk.download()
 model = BertModel.from_pretrained('bert-base-uncased')
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+tokenizer= BertTokenizer.from_pretrained('bert-base-uncased')
+bart_model = BartForConditionalGeneration.from_pretrained('facebook/bart-large-cnn')
+bart_tokenizer = BartTokenizer.from_pretrained('facebook/bart-large-cnn')
+
+def improve_text(text_to_process, topic, tone):
+    if not text_to_process:
+        return "No text provided!"
+    
+    prompt=f"Rewrite and improve the following text as a {tone} {topic}, ignore the formatting of the text, focus on the content:\n{text_to_process}"
+    inputs = bart_tokenizer([prompt], return_tensors='pt', max_length=1024, truncation=True)
+    summary_ids = bart_model.generate(
+        inputs['input_ids'],
+        max_length=1024, 
+        min_length = 80,
+        length_penalty=2.0,
+        num_beams = 4,
+        early_stopping = False
+    )
+
+    generated_texts = bart_tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+    return generated_texts
+
 
 def get_input_text(uploaded_file, text_input):
     if uploaded_file is not None:
@@ -56,11 +77,16 @@ def doc_generation_feedback(input_text, topic, tone):
     def pad_vector(vec):
         return np.pad(vec, (0, 768 - len(vec)), 'constant')
     
-    doc_vectors = [
-        {"label": "API Documentation", "vector": pad_vector([0.8, 0.5, 0.3])},
-        {"label": "User Guide", "vector": pad_vector([0.6, 0.7, 0.2])},
-        {"label": "Formal Technical", "vector": pad_vector([0.9, 0.4, 0.1])},
-        {"label": "Informal Tutorial", "vector": pad_vector([0.5, 0.8, 0.3])}
+    doc_vectors = doc_vectors = [
+        {"label": "Contract", "vector": pad_vector([0.9, 0.3, 0.2])},
+        {"label": "Official Letter", "vector": pad_vector([0.8, 0.6, 0.2])},
+        {"label": "Email Memo", "vector": pad_vector([0.5, 0.7, 0.4])}, 
+        {"label": "Research Report", "vector": pad_vector([0.7, 0.9, 0.1])},
+        
+        {"label": "Friendly", "vector": pad_vector([0.3, 0.5, 0.9])},
+        {"label": "Persuasive", "vector": pad_vector([0.4, 0.8, 0.8])}, 
+        {"label": "Formal", "vector": pad_vector([0.9, 0.5, 0.1])},
+        {"label": "Invitation", "vector": pad_vector([0.6, 0.7, 0.6])}
     ]
     
     similarities = []
@@ -128,13 +154,15 @@ with tab1:
         if extracted_text:
             st.write("Extracted Text Preview (first 500 characters):")
             st.text(extracted_text[:500] + "..." if len(extracted_text) > 500 else extracted_text)
-    topic = st.selectbox("Desired Topic", ["API Documentation", "User Guide"])
-    tone = st.selectbox("Desired Tone", ["Formal Technical", "Informal Tutorial"])
-    if st.button("Analyze & Get Feedback"):
+    topic = st.selectbox("Desired Topic", ["Contract", "Official Letter", "Email Memo", "Research Report"])
+    tone = st.selectbox("Desired Tone", ["Friendly", "Persuasive", "Formal", "Invitation"])
+    if st.button("Analyze & Improve"):
         text_to_process = get_input_text(uploaded_file, input_text)
         if text_to_process:
-            feedback = doc_generation_feedback(text_to_process, topic, tone)
-            st.write(feedback)
+            with st.spinner("Thinking..."):
+                feedback = improve_text(text_to_process, topic, tone)
+                st.subheader('Improved Draft')
+                st.write(feedback)
         else:
             st.write("Please provide text via upload or input.")
 
